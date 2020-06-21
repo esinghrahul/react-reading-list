@@ -1,4 +1,4 @@
-import React, { createContext, useState, useReducer } from 'react'
+import React, { createContext, useState, useReducer, useEffect } from 'react'
 import {v4 as uuid} from 'uuid'
 import { bookReducer } from '../reducers/book-reducer'
 
@@ -28,7 +28,13 @@ const BookContextProvider = (props) => {
     */
 
     //useReducer hook to define initial book State and send a dispatch function rather than passing all relevant functions individually
-    const [books, dispatch] = useReducer(bookReducer, [])
+    const [books, dispatch] = useReducer(bookReducer, [], () => {
+        const localData = localStorage.getItem('books')
+        return localData ? JSON.parse(localData) : []
+    })
+    useEffect(() => {
+        localStorage.setItem('books', JSON.stringify(books))
+    },[books])
     return(
         <BookContext.Provider value = {{books, dispatch}}>
             {props.children}
